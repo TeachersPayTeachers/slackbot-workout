@@ -149,7 +149,7 @@ def selectExerciseAndStartTime(bot):
     exercise = selectExercise(bot)
 
     # Announcement String of next lottery time
-    lottery_announcement = "NEXT LOTTERY FOR " + exercise["name"].upper() + " IS IN " + str(next_time_interval/60) + " MINUTES"
+    lottery_announcement = "Next Lottery for " + exercise["name"].upper() + " is in " + str(next_time_interval/60) + " minutes"
 
     # Announce the exercise to the thread
     if not bot.debug:
@@ -188,7 +188,7 @@ def assignExercise(bot, exercise):
     # Select number of reps
     exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"]+1)
 
-    winner_announcement = str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " RIGHT NOW "
+    winner_announcement = str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " Right Now! "
 
     # EVERYBODY
     if random.random() < bot.group_callout_chance:
