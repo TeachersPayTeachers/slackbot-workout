@@ -15,7 +15,7 @@
   "exercises": [
     {
       "id": 0,
-      "name": "pushups",
+      "name": "push ups",
       "minReps": 5,
       "maxReps": 15,
       "units": "rep"
@@ -29,7 +29,7 @@
     },
     {
       "id": 2,
-      "name": "wall sit",
+      "name": "wall sits",
       "minReps": 20,
       "maxReps": 50,
       "units": "second"
