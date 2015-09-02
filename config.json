@@ -47,6 +47,20 @@
       "minReps": 10,
       "maxReps": 30,
       "units": "rep"
+    },
+    {
+      "id": 5,
+      "name": "squats",
+      "minReps": 5,
+      "maxReps": 30,
+      "units": "rep"
+    },
+    {
+      "id": 6,
+      "name": "crunches",
+      "minReps": 10,
+      "maxReps": 35,
+      "units": "rep"
     }
   ]
 }
