@@ -266,14 +266,17 @@ def main():
 
     try:
         while True:
-            # Re-fetch config file if settings have changed
-            bot.setConfiguration()
+            current_hour = datetime.now().time().hour
 
-            # Get an exercise to do
-            exercise = selectExerciseAndStartTime(bot)
+            if current_hour > 9 and current_hour < 18
+                # Re-fetch config file if settings have changed
+                bot.setConfiguration()
 
-            # Assign the exercise to someone
-            assignExercise(bot, exercise)
+                # Get an exercise to do
+                exercise = selectExerciseAndStartTime(bot)
+
+                # Assign the exercise to someone
+                assignExercise(bot, exercise)
     except KeyboardInterrupt:
         saveUsers(bot)
 
