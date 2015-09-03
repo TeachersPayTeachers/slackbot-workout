@@ -266,7 +266,7 @@ def main():
 
     try:
         while True:
-            current_hour = datetime.now().time().hour
+            current_hour = datetime.now().time().hour - 4 # EST Time
 
             if current_hour > 9 and current_hour < 18:
                 # Re-fetch config file if settings have changed
