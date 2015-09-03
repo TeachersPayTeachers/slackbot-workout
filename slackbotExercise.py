@@ -268,7 +268,6 @@ def main():
         while True:
             current_hour = datetime.now().time().hour
 
-            if current_hour > 9 and current_hour < 18
             if current_hour > 9 and current_hour < 18:
                 # Re-fetch config file if settings have changed
                 bot.setConfiguration()
