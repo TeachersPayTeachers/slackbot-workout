@@ -268,7 +268,10 @@ def main():
         while True:
             current_hour = datetime.now().time().hour - 4 # EST Time
 
-            if current_hour > 9 and current_hour < 18:
+            # If hour is between 9 - 6pm
+            if (9 < current_hour < 18 and
+                    # If the day of week is Monday - Friday
+                    0 <= datetime.now().today().weekday() <= 4):
                 # Re-fetch config file if settings have changed
                 bot.setConfiguration()
 
