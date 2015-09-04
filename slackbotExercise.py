@@ -260,18 +260,19 @@ def saveUsers(bot):
     with open('user_cache.save','wb') as f:
         pickle.dump(bot.user_cache,f)
 
+def workoutTime():
+    current_hour = datetime.now().time().hour - 4 # EST Time
+    # Between 9am and 6pm
+    (9 <= current_hour <= 18 and
+        # If the day of week is Monday - Friday
+        0 <= datetime.now().today().weekday() <= 4)
 
 def main():
     bot = Bot()
 
     try:
         while True:
-            current_hour = datetime.now().time().hour - 4 # EST Time
-
-            # If hour is between 9 - 6pm
-            if (9 < current_hour < 18 and
-                    # If the day of week is Monday - Friday
-                    0 <= datetime.now().today().weekday() <= 4):
+            if workoutTime() :
                 # Re-fetch config file if settings have changed
                 bot.setConfiguration()
 
@@ -282,6 +283,5 @@ def main():
                 assignExercise(bot, exercise)
     except KeyboardInterrupt:
         saveUsers(bot)
-
 
 main()
