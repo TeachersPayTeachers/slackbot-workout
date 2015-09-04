@@ -263,7 +263,7 @@ def saveUsers(bot):
 def workoutTime():
     current_hour = datetime.now().time().hour - 4 # EST Time
     # Between 9am and 6pm
-    (9 <= current_hour <= 18 and
+    return (9 <= current_hour <= 18 and
         # If the day of week is Monday - Friday
         0 <= datetime.now().today().weekday() <= 4)
 
