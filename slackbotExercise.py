@@ -267,22 +267,24 @@ def workout_time():
             # If the day of week is Monday - Friday
             0 <= datetime.now().today().weekday() <= 4)
 
+def save_user_time():
+    save_time = datetime.today().replace(hour=18, minute=0, second=0, microsecond=0)
+    return ((datetime.now() - timedelta(hours=4)) == save_time)
 
 def main():
     bot = Bot()
 
-    try:
-        while True:
-            if workout_time():
-                # Re-fetch config file if settings have changed
-                bot.setConfiguration()
+    while True:
+        if workout_time():
+            # Re-fetch config file if settings have changed
+            bot.setConfiguration()
 
-                # Get an exercise to do
-                exercise = selectExerciseAndStartTime(bot)
+            # Get an exercise to do
+            exercise = selectExerciseAndStartTime(bot)
 
-                # Assign the exercise to someone
-                assignExercise(bot, exercise)
-    except KeyboardInterrupt:
-        saveUsers(bot)
+            # Assign the exercise to someone
+            assignExercise(bot, exercise)
+        if save_user_time():
+            saveUsers(bot)
 
 main()
