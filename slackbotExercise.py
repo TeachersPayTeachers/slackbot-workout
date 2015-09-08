@@ -263,7 +263,7 @@ def saveUsers(bot):
 
 def workout_time():
     # Between 0900 and 1800; 9am - 6pm
-    return (9 <= (datetime.now() - timedelta(hours=4)).hour <= 18 and
+    return (9 <= (datetime.now() - timedelta(hours=4)).hour < 18 and
             # If the day of week is Monday - Friday
             0 <= datetime.now().today().weekday() <= 4)
 
