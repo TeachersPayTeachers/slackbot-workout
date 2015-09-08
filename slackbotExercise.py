@@ -8,7 +8,7 @@ from random import shuffle
 import pickle
 import os.path
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from User import User
 
@@ -260,19 +260,20 @@ def saveUsers(bot):
     with open('user_cache.save','wb') as f:
         pickle.dump(bot.user_cache,f)
 
-def workoutTime():
-    current_hour = datetime.now().time().hour - 4 # EST Time
-    # Between 9am and 6pm
-    return (9 <= current_hour <= 18 and
-        # If the day of week is Monday - Friday
-        0 <= datetime.now().today().weekday() <= 4)
+
+def workout_time():
+    # Between 0900 and 1800; 9am - 6pm
+    return (9 <= (datetime.now() - timedelta(hours=4)).hour <= 18 and
+            # If the day of week is Monday - Friday
+            0 <= datetime.now().today().weekday() <= 4)
+
 
 def main():
     bot = Bot()
 
     try:
         while True:
-            if workoutTime() :
+            if workout_time():
                 # Re-fetch config file if settings have changed
                 bot.setConfiguration()
 
