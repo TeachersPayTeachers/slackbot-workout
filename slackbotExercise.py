@@ -1,5 +1,4 @@
 import random
-import time
 import requests
 import json
 import csv
@@ -18,6 +17,7 @@ URL_TOKEN_STRING =  os.environ['SLACK_URL_TOKEN_STRING']
 
 HASH = "%23"
 
+
 # Configuration values to be set in setConfiguration
 class Bot:
     def __init__(self):
@@ -33,7 +33,6 @@ class Bot:
         # round robin store
         self.user_queue = []
 
-
     def loadUserCache(self):
         if os.path.isfile('user_cache.save'):
             with open('user_cache.save','rb') as f:
@@ -43,12 +42,12 @@ class Bot:
 
         return {}
 
-    '''
-    Sets the configuration file.
-
-    Runs after every callout so that settings can be changed realtime
-    '''
     def setConfiguration(self):
+        """
+        Sets the configuration file.
+
+        Runs after every callout so that settings can be changed realtime
+        """
         # Read variables fromt the configuration file
         with open('config.json') as f:
             settings = json.load(f)
@@ -62,6 +61,8 @@ class Bot:
             self.group_callout_chance = settings["callouts"]["groupCalloutChance"]
             self.channel_id = os.environ['CHANNEL_ID']
             self.exercises = settings["exercises"]
+            self.start_hour = settings["workoutTime"]["startHour"]
+            self.end_hour = settings["workoutTime"]["endHour"]
 
             self.debug = settings["debug"]
 
@@ -140,44 +141,44 @@ def fetchActiveUsers(bot):
 
     return active_users
 
-'''
-Selects an exercise and start time, and sleeps until the time
-period has past.
-'''
-def selectExerciseAndStartTime(bot):
-    next_time_interval = selectNextTimeInterval(bot)
-    exercise = selectExercise(bot)
 
+def announce_next_lottery_time(bot, exercise, next_time_interval):
+    """
+    Make an announcement about the next exercise lottery
+
+    :param bot:
+    :param exercise:
+    :param next_time_interval:
+    :return:
+    """
     # Announcement String of next lottery time
-    lottery_announcement = "Next Lottery for " + exercise["name"].upper() + " is in " + str(next_time_interval/60) + " minutes"
+    lottery_announcement = "Next Lottery for {} is in {} minutes.".format(
+        exercise["name"].upper(),
+        str(next_time_interval/60))
 
     # Announce the exercise to the thread
     if not bot.debug:
         requests.post(bot.post_URL, data=lottery_announcement)
-    print lottery_announcement
-
-    # Sleep the script until time is up
-    if not bot.debug:
-        time.sleep(next_time_interval)
-    else:
-        # If debugging, once every 5 seconds
-        time.sleep(5)
-
-    return exercise
+    print(lottery_announcement)
 
 
-'''
-Selects the next exercise
-'''
-def selectExercise(bot):
-    idx = random.randrange(0, len(bot.exercises))
-    return bot.exercises[idx]
+def select_exercise(bot):
+    """
+    Select the next exercise
+
+    :param bot:
+    :return:
+    """
+    return bot.exercises[random.randrange(0, len(bot.exercises))]
 
 
-'''
-Selects the next time interval
-'''
-def selectNextTimeInterval(bot):
+def select_next_time_interval(bot):
+    """
+    Get a random time within the bot's range
+
+    :param bot:
+    :return:
+    """
     return random.randrange(bot.min_countdown * 60, bot.max_countdown * 60)
 
 
@@ -261,30 +262,60 @@ def saveUsers(bot):
         pickle.dump(bot.user_cache,f)
 
 
-def workout_time():
-    # Between 0900 and 1800; 9am - 6pm
-    return (9 <= (datetime.now() - timedelta(hours=4)).hour < 18 and
+def workout_time(bot):
+    return (bot.start_hour <= (datetime.now() - timedelta(hours=4)).hour < bot.end_hour and
             # If the day of week is Monday - Friday
             0 <= datetime.now().today().weekday() <= 4)
+
 
 def save_user_time():
     save_time = datetime.today().replace(hour=18, minute=0, second=0, microsecond=0)
     return ((datetime.now() - timedelta(hours=4)) == save_time)
 
+
+def is_valid_interval(bot, sleep_interval):
+    """
+    Check if the given sleep_interval is still within the bot's
+    valid time range
+
+    :param bot:
+    :param sleep_interval:
+    :return:
+    """
+    now = datetime.now() - timedelta(hours=4)
+    next_interval_hour = (now + timedelta(minutes=(sleep_interval/60))).hour
+
+    return bot.start_hour <= next_interval_hour < bot.end_hour
+
+
 def main():
     bot = Bot()
 
     while True:
-        if workout_time():
+        if workout_time(bot):
             # Re-fetch config file if settings have changed
             bot.setConfiguration()
 
-            # Get an exercise to do
-            exercise = selectExerciseAndStartTime(bot)
+            # Get the next sleep interval; in seconds for use with `time.sleep()`
+            sleep_interval = select_next_time_interval(bot)
 
-            # Assign the exercise to someone
-            assignExercise(bot, exercise)
+            # If the next interval is within valid hours
+            if is_valid_interval(bot, sleep_interval):
+                # Get an exercise to do
+                exercise = select_exercise(bot)
+
+                # Announce the next lottery
+                announce_next_lottery_time(bot, exercise, sleep_interval)
+
+                # Sleep
+                time.sleep(sleep_interval)
+
+                # Assign the exercise to someone
+                assignExercise(bot, exercise)
+
         if save_user_time():
             saveUsers(bot)
 
-main()
+
+if '__main__' == __name__:
+    main()

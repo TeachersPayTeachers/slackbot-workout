@@ -1,6 +1,11 @@
 {
   "debug": false,
 
+  "workoutTime": {
+    "startHour": 9,
+    "endHour": 18
+  },
+
   "callouts": {
     "timeBetween": {
       "minTime": 28,
