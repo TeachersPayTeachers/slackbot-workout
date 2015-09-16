@@ -1,1 +1,1 @@
-worker: python slackbotExercise.py
+worker: python exercise.py

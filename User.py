@@ -3,6 +3,9 @@ import requests
 import json
 import datetime
 
+from dotenv import load_dotenv
+load_dotenv('.env')
+
 # Environment variables must be set with your tokens
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
 
