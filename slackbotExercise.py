@@ -270,7 +270,8 @@ def workout_time(bot):
 
 def save_user_time():
     save_time = datetime.today().replace(hour=18, minute=0, second=0, microsecond=0)
-    return ((datetime.now() - timedelta(hours=4)) == save_time)
+    return ((datetime.now() - timedelta(hours=4)).replace(
+        second=0, microsecond=0) == save_time)
 
 
 def is_valid_interval(bot, sleep_interval):
