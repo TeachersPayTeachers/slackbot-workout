@@ -182,10 +182,14 @@ def select_next_time_interval(bot):
     return random.randrange(bot.min_countdown * 60, bot.max_countdown * 60)
 
 
-'''
-Selects a person to do the already-selected exercise
-'''
-def assignExercise(bot, exercise):
+def assign_exercise(bot, exercise):
+    """
+    Selects a person to do the already-selected exercise
+
+    :param bot:
+    :param exercise:
+    :return:
+    """
     # Select number of reps
     exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"]+1)
 
@@ -193,16 +197,16 @@ def assignExercise(bot, exercise):
 
     # EVERYBODY
     if random.random() < bot.group_callout_chance:
-        winner_announcement += "@channel!"
+        winner_announcement += "@here!"
 
         for user_id in bot.user_cache:
             user = bot.user_cache[user_id]
             user.addExercise(exercise, exercise_reps)
 
-        logExercise(bot,"@channel",exercise["name"],exercise_reps,exercise["units"])
+        logExercise(bot, "@here", exercise["name"], exercise_reps, exercise["units"])
 
     else:
-        winners = [selectUser(bot, exercise) for i in range(bot.num_people_per_callout)]
+        winners = [selectUser(bot, exercise) for _ in range(bot.num_people_per_callout)]
 
         for i in range(bot.num_people_per_callout):
             winner_announcement += str(winners[i].getUserHandle())
@@ -214,12 +218,12 @@ def assignExercise(bot, exercise):
                 winner_announcement += ", "
 
             winners[i].addExercise(exercise, exercise_reps)
-            logExercise(bot,winners[i].getUserHandle(),exercise["name"],exercise_reps,exercise["units"])
+            logExercise(bot, winners[i].getUserHandle(), exercise["name"], exercise_reps, exercise["units"])
 
     # Announce the user
     if not bot.debug:
         requests.post(bot.post_URL, data=winner_announcement)
-    print winner_announcement
+    print (winner_announcement)
 
 
 def logExercise(bot,username,exercise,reps,units):
@@ -311,7 +315,7 @@ def main():
                 time.sleep(sleep_interval)
 
                 # Assign the exercise to someone
-                assignExercise(bot, exercise)
+                assign_exercise(bot, exercise)
 
         if save_user_time():
             saveUsers(bot)
