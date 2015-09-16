@@ -8,8 +8,10 @@ import pickle
 import os.path
 import time
 from datetime import datetime, timedelta
-
+from dotenv import load_dotenv
 from User import User
+
+load_dotenv('.env')
 
 # Environment variables must be set with your tokens
 USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
@@ -273,9 +275,13 @@ def workout_time(bot):
 
 
 def save_user_time():
-    save_time = datetime.today().replace(hour=18, minute=0, second=0, microsecond=0)
-    return ((datetime.now() - timedelta(hours=4)).replace(
-        second=0, microsecond=0) == save_time)
+    """
+    Creates a DateTime object with correct save time
+
+    Checks if that save time is now
+    """
+    save_time = datetime.utcnow().replace(hour=18, minute=0, second=0, microsecond=0)
+    return (save_time == (datetime.utcnow() - timedelta(hours=4)))
 
 
 def is_valid_interval(bot, sleep_interval):
